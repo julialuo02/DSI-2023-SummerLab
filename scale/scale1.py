@@ -33,9 +33,6 @@ def calculate_tipping_angle(num_balls_left, num_balls_right):
 def balanced_scale(num_balls_left, num_balls_right):
     fig, ax = plt.subplots(figsize=(96/100, 96/100), dpi=100)
 
-    ax.set_xlim(0,X_LIMIT)
-    ax.set_ylim(0,Y_LIMIT)
-
     fulcrum_x = [FULCRUM_X - FULCRUM_WIDTH / 2, FULCRUM_X + FULCRUM_WIDTH / 2, FULCRUM_X]
     fulcrum_y = [FULCRUM_Y - FULCRUM_HEIGHT, FULCRUM_Y - FULCRUM_HEIGHT, FULCRUM_Y]
     plt.fill(fulcrum_x, fulcrum_y,FULCRUM_COLOR)
@@ -45,6 +42,16 @@ def balanced_scale(num_balls_left, num_balls_right):
     scale_x2 = FULCRUM_X + SCALE_LEN / 2 * math.cos(tipping_angle)
     scale_y1 = FULCRUM_Y - SCALE_LEN / 2 * math.sin(tipping_angle)
     scale_y2 = FULCRUM_Y + SCALE_LEN / 2 * math.sin(tipping_angle)
+
+    max_y_left = scale_y1 + BALL_RADIUS + BALL_SPACING + (BALL_RADIUS * 2 + BALL_SPACING) * (num_balls_left - 1)
+    max_y_right = scale_y2 + BALL_RADIUS + BALL_SPACING + (BALL_RADIUS * 2 + BALL_SPACING) * (num_balls_right - 1)
+
+    max_y = max(max_y_left, max_y_right)
+    Y_LIMIT = max(max_y + BALL_RADIUS + 0.05, 1.2)
+
+    ax.set_xlim(0, X_LIMIT)
+    ax.set_ylim(0, Y_LIMIT)
+
     scale_x = [scale_x1, scale_x2]
     scale_y = [scale_y1, scale_y2]
     ax.plot(scale_x, scale_y, linewidth=SCALE_THICKNESS, color=SCALE_COLOR)
@@ -68,8 +75,8 @@ def balanced_scale(num_balls_left, num_balls_right):
 
     return fig
 
-num_samples_train = 10
-num_samples_test = 10
+num_samples_train = 1
+num_samples_test = 1
 
 for _ in range(num_samples_train + num_samples_test):
     num_balls_left = random.randint(0, 6)
