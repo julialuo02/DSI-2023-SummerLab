@@ -1,3 +1,3 @@
 # DSI-2023-Scale
 
-Code for datasets and its generated images
+Code for scale dataset and lightswitch dataset.
