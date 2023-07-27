@@ -86,8 +86,9 @@ def light_switch_and_bulb(position):
 
 num_samples_to_save = 10
 
+# Random position for the light switch (within 5 to 175 degrees)
 for i in range(num_samples_to_save):
-    switch_position = random.uniform(5 / 180, 175 / 180)  # Random position for the light switch (within 5 to 175 degrees)
+    switch_position = random.uniform(5 / 180, 175 / 180)  
     fig = light_switch_and_bulb(switch_position)
     fig.savefig(f'./causal_data/light_switch/light_switch_{i}.png', dpi=96)
     plt.clf()
