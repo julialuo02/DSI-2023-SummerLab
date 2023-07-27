@@ -15,6 +15,9 @@ LIGHT_BULB_STEM_HEIGHT = 0.08
 LIGHT_BULB_STEM_WIDTH = 0.04
 LIGHT_BULB_BOTTOM_HEIGHT = 0.03
 
+if not os.path.exists('./causal_data/light_switch/'):
+    os.makedirs('./causal_data/light_switch/')
+
 def light_switch_and_bulb(position):
     fig, ax = plt.subplots(figsize=(96/100, 96/100), dpi=100, facecolor='#333333')  # Facecolor: dark gray
 
@@ -67,7 +70,7 @@ def light_switch_and_bulb(position):
                          color='black', edgecolor='black')
     ax.add_artist(stem)
 
-    # Light bulb bottom (grey rectangle with patterned stripes)
+    # Light bulb base
     bottom_x = bulb_x - LIGHT_BULB_RADIUS
     bottom_y = bulb_y - LIGHT_BULB_RADIUS - LIGHT_BULB_BOTTOM_HEIGHT
     bottom = plt.Rectangle((bottom_x, bottom_y), 2 * LIGHT_BULB_RADIUS, LIGHT_BULB_BOTTOM_HEIGHT,
@@ -83,15 +86,8 @@ def light_switch_and_bulb(position):
 
 num_samples_to_save = 10
 
-if not os.path.exists('./causal_data/light_switch/'):
-    os.makedirs('./causal_data/light_switch/')
-
-plt.ioff()  # Turn off interactive mode
-
 for i in range(num_samples_to_save):
     switch_position = random.uniform(5 / 180, 175 / 180)  # Random position for the light switch (within 5 to 175 degrees)
     fig = light_switch_and_bulb(switch_position)
     fig.savefig(f'./causal_data/light_switch/light_switch_{i}.png', dpi=96)
     plt.clf()
-
-plt.ion()  # Turn on interactive mode again
