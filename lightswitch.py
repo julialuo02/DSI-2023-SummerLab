@@ -3,23 +3,25 @@ import os
 import math
 import numpy as np
 import random
+import matplotlib.colors as mcolors
 
 random.seed(42)
 
 SWITCH_RADIUS = 0.3
-SWITCH_COLOR = 'white' 
+SWITCH_COLOR = 'white'  # White switch
 DIAL_ARROW_LENGTH = 0.2
-DIAL_COLOR = 'blue' 
+DIAL_COLOR = 'blue'  # Blue dial
 LIGHT_BULB_RADIUS = 0.15
 LIGHT_BULB_STEM_HEIGHT = 0.08
 LIGHT_BULB_STEM_WIDTH = 0.04
 LIGHT_BULB_BOTTOM_HEIGHT = 0.03
 
-if not os.path.exists('./causal_data/light_switch/'):
-    os.makedirs('./causal_data/light_switch/')
+# Custom colormap with 100 shades of yellow
+num_colors = 100
+yellow_colors = mcolors.LinearSegmentedColormap.from_list('yellow_colors', ['#FFFF00', '#FFCC00'], N=num_colors)
 
 def light_switch_and_bulb(position):
-    fig, ax = plt.subplots(figsize=(96/100, 96/100), dpi=100, facecolor='#333333')  # Facecolor: dark gray
+    fig, ax = plt.subplots(figsize=(96/100, 96/100), dpi=100, facecolor='#333333')  # Facecolor - dark grey
 
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
@@ -31,22 +33,19 @@ def light_switch_and_bulb(position):
     ax.fill_between(switch_x, switch_y, 0.7, color=SWITCH_COLOR)
 
     # Dial arrow (blue)
-    arrow_x = 0.3 + (SWITCH_RADIUS + DIAL_ARROW_LENGTH) * np.cos(position * np.pi)
-    arrow_y = 0.7 + (SWITCH_RADIUS + DIAL_ARROW_LENGTH) * np.sin(position * np.pi)
+    dial_angle = position * np.pi
+    dial_angle_wrapped = dial_angle % (2 * np.pi)
+    if dial_angle_wrapped > np.pi:
+        dial_angle_wrapped -= 2 * np.pi
+    arrow_x = 0.3 + (SWITCH_RADIUS - 0.05) * np.cos(dial_angle_wrapped)  # Move arrow closer to center
+    arrow_y = 0.7 + (SWITCH_RADIUS - 0.05) * np.sin(dial_angle_wrapped)
     ax.arrow(0.3, 0.7, arrow_x - 0.3, arrow_y - 0.7, head_width=0.02, head_length=0.02, fc=DIAL_COLOR, ec=DIAL_COLOR)
 
-    # Light bulb (gradually turning yellow)
-    if position >= 175 / 180:
-        # Clear bulb (fully transparent)
-        bulb_color = (1, 1, 1, 0)
-    elif position <= 5 / 180:
-        # Bright yellow bulb (no transparency)
-        bulb_color = (1, 1, 0, 1)
-    else:
-        # Interpolate the bulb color between clear and bright yellow
-        alpha = 1.0 - (position - 5 / 180) / (170 / 180)
-        bulb_color = (1, 1, 0, alpha)
-    
+    # Light bulb (gradually turning yellow and transparent)
+    normalized_position = (180 - abs(dial_angle_wrapped) * 180 / np.pi) / 180.0  # Normalize position to range [0, 1]
+    transparency = 1.0 - normalized_position  # Linear interpolation between 0 and 1
+    color_interpolation = yellow_colors(position)[:3]  # Extract RGB values (0-1 range)
+    bulb_color = (*color_interpolation, transparency)  # Combine with alpha (transparency)
     bulb_x = 0.8
     bulb_y = 0.2
     bulb = plt.Circle((bulb_x, bulb_y), LIGHT_BULB_RADIUS, color=bulb_color, edgecolor='white', linewidth=1.5)
@@ -70,7 +69,7 @@ def light_switch_and_bulb(position):
                          color='black', edgecolor='black')
     ax.add_artist(stem)
 
-    # Light bulb base
+    # Light bulb bottom (grey rectangle with patterned stripes)
     bottom_x = bulb_x - LIGHT_BULB_RADIUS
     bottom_y = bulb_y - LIGHT_BULB_RADIUS - LIGHT_BULB_BOTTOM_HEIGHT
     bottom = plt.Rectangle((bottom_x, bottom_y), 2 * LIGHT_BULB_RADIUS, LIGHT_BULB_BOTTOM_HEIGHT,
@@ -84,11 +83,13 @@ def light_switch_and_bulb(position):
 
     return fig
 
-num_samples_to_save = 10
+num_samples_to_save = 100
 
-# Random position for the light switch (within 5 to 175 degrees)
+if not os.path.exists('./causal_data/light_switch/'):
+    os.makedirs('./causal_data/light_switch/')
+
 for i in range(num_samples_to_save):
-    switch_position = random.uniform(5 / 180, 175 / 180)  
+    switch_position = random.uniform(0, 180)  # Random position for the light switch (within 0 to 180 degrees)
     fig = light_switch_and_bulb(switch_position)
     fig.savefig(f'./causal_data/light_switch/light_switch_{i}.png', dpi=96)
     plt.clf()
