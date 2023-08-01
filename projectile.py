@@ -5,7 +5,7 @@ import numpy as np
 import random
 from matplotlib.patches import Rectangle
 
-INITIAL_VELOCITY = 20
+# Constants
 GRAVITY = 9.8
 TIME_STEPS = 0.01
 BALL_RADIUS = 1.5  # Set the ball size
@@ -18,12 +18,19 @@ MAX_LAUNCH_HEIGHT = 15
 if not os.path.exists('./causal_data/projectile'):
     os.makedirs('./causal_data/projectile')
 
-def calculate_trajectory(angle, height):
+def calculate_initial_velocity(angle, height, range_):
+    # Calculate the initial velocity required for the desired horizontal range
+    v_squared = (range_ * GRAVITY) / np.sin(2 * np.radians(angle))
+    v_y = np.sqrt(2 * GRAVITY * height)
+    initial_velocity = np.sqrt(v_squared + v_y**2)
+    return initial_velocity
+
+def calculate_trajectory(angle, height, initial_velocity):
 
     angle_rad = np.radians(angle)
 
-    speed_x = INITIAL_VELOCITY * np.cos(angle_rad)
-    speed_y = INITIAL_VELOCITY * np.sin(angle_rad)
+    speed_x = initial_velocity * np.cos(angle_rad)
+    speed_y = initial_velocity * np.sin(angle_rad)
 
     time = 0
     x = 3  # Launch from the top right corner of the rectangle
@@ -49,8 +56,13 @@ for i in range(num_samples):
 
     angle_deg = np.random.uniform(MIN_LAUNCH_ANGLE, MAX_LAUNCH_ANGLE)
     height = np.random.uniform(MIN_LAUNCH_HEIGHT, MAX_LAUNCH_HEIGHT)
+    
+    # Calculate the desired horizontal range based on the height
+    max_range = 3 * np.sqrt((2 * height) / GRAVITY)
+    range_ = np.random.uniform(0.5, 1) * max_range  # Adjust range between 50% to 100% of max_range
 
-    x_values, y_values = calculate_trajectory(angle_deg, height)
+    initial_velocity = calculate_initial_velocity(angle_deg, height, range_)
+    x_values, y_values = calculate_trajectory(angle_deg, height, initial_velocity)
 
     fig, ax = plt.subplots(figsize=(96/100, 96/100), dpi=100)
 
