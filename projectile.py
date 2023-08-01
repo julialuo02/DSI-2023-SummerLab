@@ -5,10 +5,10 @@ import numpy as np
 import random
 from matplotlib.patches import Rectangle
 
-# Constants
+# CONSTANTS
 GRAVITY = 9.8
 TIME_STEPS = 0.01
-BALL_RADIUS = 1.5  # Set the ball size
+BALL_RADIUS = 1.5 
 
 MIN_LAUNCH_ANGLE = 5
 MAX_LAUNCH_ANGLE = 85
@@ -19,7 +19,7 @@ if not os.path.exists('./causal_data/projectile'):
     os.makedirs('./causal_data/projectile')
 
 def calculate_initial_velocity(angle, height, range_):
-    # Calculate the initial velocity required for the desired horizontal range
+    # initial velocity
     v_squared = (range_ * GRAVITY) / np.sin(2 * np.radians(angle))
     v_y = np.sqrt(2 * GRAVITY * height)
     initial_velocity = np.sqrt(v_squared + v_y**2)
@@ -33,7 +33,7 @@ def calculate_trajectory(angle, height, initial_velocity):
     speed_y = initial_velocity * np.sin(angle_rad)
 
     time = 0
-    x = 3  # Launch from the top right corner of the rectangle
+    x = 3 
     y = height
 
     x_values = [x]
@@ -57,26 +57,26 @@ for i in range(num_samples):
     angle_deg = np.random.uniform(MIN_LAUNCH_ANGLE, MAX_LAUNCH_ANGLE)
     height = np.random.uniform(MIN_LAUNCH_HEIGHT, MAX_LAUNCH_HEIGHT)
     
-    # Calculate the desired horizontal range based on the height
+    # Horizontal range based on height
     max_range = 3 * np.sqrt((2 * height) / GRAVITY)
-    range_ = np.random.uniform(0.5, 1) * max_range  # Adjust range between 50% to 100% of max_range
+    range_ = np.random.uniform(0.5, 1) * max_range 
 
     initial_velocity = calculate_initial_velocity(angle_deg, height, range_)
     x_values, y_values = calculate_trajectory(angle_deg, height, initial_velocity)
 
     fig, ax = plt.subplots(figsize=(96/100, 96/100), dpi=100)
 
-    # Plot the trajectory
+    # Plot trajectory
     ax.plot(x_values, y_values)
     
-    # Draw a rectangle as the launching platform
+    # Launching platform
     rect = Rectangle((0, 0), 3, height, linewidth=1, edgecolor='black', facecolor='lightgray')
     ax.add_patch(rect)
     
-    # Add a ball as a circle at the initial position (top right corner of the rectangle)
+    # Ball initial position
     ax.add_patch(plt.Circle((3, height), radius=BALL_RADIUS, color='red'))
     
-    # Add a ball as a circle at the final position
+    # Ball final position
     ax.add_patch(plt.Circle((x_values[-1], y_values[-1]), radius=BALL_RADIUS, color='blue'))
 
     ax.set_xticks([])
@@ -84,7 +84,6 @@ for i in range(num_samples):
     ax.set_xlim(0, max(x_values) + 1)
     ax.set_ylim(0, max(y_values) + 1)
 
-    # Remove the black square border
     plt.axis('off')
 
     plt.tight_layout()
