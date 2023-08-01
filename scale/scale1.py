@@ -11,11 +11,12 @@ X_LIMIT = 1; Y_LIMIT = 1
 FULCRUM_X = 0.5; FULCRUM_Y = 0.4; FULCRUM_HEIGHT = 0.2; FULCRUM_WIDTH = 0.14
 FULCRUM_COLOR = 'blue'
 
-SCALE_THICKNESS = 3; SCALE_LEN = 0.8; SCALE_COLOR = 'black'
-SCALE_TIP_FACTOR = 8
+SCALE_THICKNESS = 3; SCALE_LEN = 0.7; SCALE_COLOR = 'black'
+SCALE_TIP_FACTOR = 4
 
 BALL_RADIUS = 0.03; BALL_SPACING = 0.01
 BALL_COLOR_L = 'red'; BALL_COLOR_R = 'green'
+BALL_PER_ROW = 3
 
 TRAY_SUPPORT_HEIGHT = 0.15
 TRAY_LENGTH = 0.2
@@ -36,47 +37,17 @@ def calculate_tipping_angle(num_balls_left, num_balls_right):
 def draw_balls(ax, num, location, color):
     location_x, location_y = location
 
-    if num >= 1:
-        x = location_x
-        y = location_y + BALL_RADIUS + BALL_SPACING + (BALL_RADIUS * 2 + BALL_SPACING) * 0 + \
-            TRAY_SUPPORT_HEIGHT + BALL_SPACING
-        ball = plt.Circle((x, y), BALL_RADIUS, color=color)
-        ax.add_artist(ball)
+    full_row = num // BALL_PER_ROW
+    for r in range(full_row + 1):
 
-    if num >= 2:
-        x = location_x - BALL_RADIUS * 2 - BALL_SPACING
-        y = location_y + BALL_RADIUS + BALL_SPACING + (BALL_RADIUS * 2 + BALL_SPACING) * 0 + \
-            TRAY_SUPPORT_HEIGHT + BALL_SPACING
-        ball = plt.Circle((x, y), BALL_RADIUS, color=color)
-        ax.add_artist(ball)
+        cols = min(num - r * BALL_PER_ROW, BALL_PER_ROW)
+        for c in range(cols):
+            x = location_x + (c-BALL_PER_ROW/2) * (BALL_RADIUS * 2 + BALL_SPACING) + BALL_RADIUS
+            y = location_y + BALL_RADIUS + BALL_SPACING + (BALL_RADIUS * 2 + BALL_SPACING) * r + \
+                TRAY_SUPPORT_HEIGHT + BALL_SPACING
+            ball = plt.Circle((x, y), BALL_RADIUS, color=color)
+            ax.add_artist(ball)
 
-    if num >= 3:
-        x = location_x + BALL_RADIUS * 2 + BALL_SPACING
-        y = location_y + BALL_RADIUS + BALL_SPACING + (BALL_RADIUS * 2 + BALL_SPACING) * 0 + \
-            TRAY_SUPPORT_HEIGHT + BALL_SPACING
-        ball = plt.Circle((x, y), BALL_RADIUS, color=color)
-        ax.add_artist(ball)
-
-    if num >= 4:
-        x = location_x 
-        y = location_y + BALL_RADIUS + BALL_SPACING + (BALL_RADIUS * 2 + BALL_SPACING) * 1 + \
-            TRAY_SUPPORT_HEIGHT + BALL_SPACING
-        ball = plt.Circle((x, y), BALL_RADIUS, color=color)
-        ax.add_artist(ball)
-    
-    if num >= 5:
-        x = location_x - BALL_RADIUS * 2 - BALL_SPACING
-        y = location_y + BALL_RADIUS + BALL_SPACING + (BALL_RADIUS * 2 + BALL_SPACING) * 1 + \
-            TRAY_SUPPORT_HEIGHT + BALL_SPACING
-        ball = plt.Circle((x, y), BALL_RADIUS, color=color)
-        ax.add_artist(ball)
-
-    if num >= 6:
-        x = location_x + BALL_RADIUS * 2 + BALL_SPACING
-        y = location_y + BALL_RADIUS + BALL_SPACING + (BALL_RADIUS * 2 + BALL_SPACING) * 1 + \
-            TRAY_SUPPORT_HEIGHT + BALL_SPACING
-        ball = plt.Circle((x, y), BALL_RADIUS, color=color)
-        ax.add_artist(ball)
 
 
 def balanced_scale(num_balls_left, num_balls_right):
@@ -124,15 +95,14 @@ def balanced_scale(num_balls_left, num_balls_right):
 num_samples_train = 100
 num_samples_test = 100
 
-for _ in range(num_samples_train + num_samples_test):
-    num_balls_left = random.randint(0, 6)
-    num_balls_right = random.randint(0, 6)
-    fig = balanced_scale(num_balls_left, num_balls_right)
-    if _ < num_samples_test:
-        fig.savefig(f'./causal_data/scale/test/scale_{num_balls_left}_{num_balls_right}.png', dpi=96)
-    else:
-        fig.savefig(f'./causal_data/scale/train/scale_{num_balls_left}_{num_balls_right}.png', dpi=96)
-    plt.clf()
 
-# fig = balanced_scale(6,2)
+for num_l in range(10):
+    for num_r in range(10):
+        tip_angle = calculate_tipping_angle(num_l, num_r)
+        fig = balanced_scale(num_l, num_r)
+        fig.savefig(f'./causal_data/scale/test/scale_{num_l}_{num_r}_{tip_angle}.png', dpi=96)
+        fig.savefig(f'./causal_data/scale/train/scale_{num_l}_{num_r}_{tip_angle}.png', dpi=96)
+        plt.clf()
+
+# fig = balanced_scale(0,9)
 # plt.show()

@@ -53,10 +53,12 @@ for i in range(num_samples):
     plt.figure()
     plt.plot(x_values, y_values)
     
-    plt.xlabel('X')
-    plt.ylabel('Y')
+    plt.xlabel('HORIZONTAL DISTANCE')
+    plt.ylabel('VERTICAL DISTANCE')
+    plt.savefig('./projectile_data/projectile_image_{i+1}')
     plt.grid(False)
     plt.axis('off')
+
 
 
 
