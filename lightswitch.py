@@ -83,13 +83,14 @@ def light_switch_and_bulb(position):
 
     return fig
 
-num_samples_to_save = 100
+num_samples_to_save = 181
 
 if not os.path.exists('./causal_data/light_switch/'):
     os.makedirs('./causal_data/light_switch/')
 
 for i in range(num_samples_to_save):
-    switch_position = random.uniform(0, 180)  # Random position for the light switch (within 0 to 180 degrees)
-    fig = light_switch_and_bulb(switch_position / 180)
-    fig.savefig(f'./causal_data/light_switch/light_switch_{i}.png', dpi=96)
+    switch_position = i / (num_samples_to_save-1)
+    switch_angle = switch_position * 180
+    fig = light_switch_and_bulb(switch_position)
+    fig.savefig(f'./causal_data/light_switch/light_switch_{switch_angle:.0f}_{switch_position:.5f}.png', dpi=96)
     plt.clf()
