@@ -90,6 +90,6 @@ if not os.path.exists('./causal_data/light_switch/'):
 
 for i in range(num_samples_to_save):
     switch_position = random.uniform(0, 180)  # Random position for the light switch (within 0 to 180 degrees)
-    fig = light_switch_and_bulb(switch_position)
+    fig = light_switch_and_bulb(switch_position / 180)
     fig.savefig(f'./causal_data/light_switch/light_switch_{i}.png', dpi=96)
     plt.clf()
