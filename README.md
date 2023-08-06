@@ -1,3 +1,3 @@
-# DSI-2023-Scale
+# DSI-2023-SummerLab
 
 Code for scale dataset and lightswitch dataset.
